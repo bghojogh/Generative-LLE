@@ -1,5 +1,6 @@
 from my_LLE import My_LLE
 from my_GLLE import My_GLLE
+from my_GLLE1 import My_GLLE1
 from sklearn import manifold, datasets
 import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
@@ -12,14 +13,14 @@ from sklearn.utils import check_random_state
 
 def main():
     # settings:
-    method = "LLE"  #--> LLE_ready, LLE, GLLE
-    dataset = "Sphere"  #--> Swiss_roll, S_curve, Sphere
-    make_dataset_again = False
+    method = "GLLE1"  #--> LLE_ready, LLE, GLLE, GLLE1
+    dataset = "Sphere_small"  #--> Swiss_roll, S_curve, Sphere, Sphere_small
+    make_dataset_again = True
     embed_again = True
     generate_embedding_again = False
     plot_manifold_interpolation = False
     n_generation_of_embedding = 10
-    max_itr_reconstruction = 10
+    max_iterations = 10
     n_components = 5
 
     if make_dataset_again:
@@ -31,6 +32,8 @@ def main():
             X, color = datasets.make_s_curve(n_samples=5000, random_state=0)
         elif dataset == "Sphere":
             X, color = make_sphere_dataset(n_samples=5000, severed_poles=True)
+        elif dataset == "Sphere_small":
+            X, color = make_sphere_dataset(n_samples=1000, severed_poles=True)
         plot_3D(X, color, path_to_save='./datasets/'+dataset+"/", name="dataset")
         save_variable(variable=X, name_of_variable="X", path_to_save='./datasets/'+dataset+"/")
         save_variable(variable=color, name_of_variable="color", path_to_save='./datasets/'+dataset+"/")
@@ -49,8 +52,12 @@ def main():
         Y = my_LLE.fit_transform(calculate_again=embed_again)
         Y = Y.T
     elif method == "GLLE":
-        my_GLLE = My_GLLE(X.T, n_neighbors=10, n_components=n_components, path_save="./saved_files/GLLE/"+dataset+"/", max_itr_reconstruction=max_itr_reconstruction)
+        my_GLLE = My_GLLE(X.T, n_neighbors=10, n_components=n_components, path_save="./saved_files/GLLE/"+dataset+"/", max_itr_reconstruction=max_iterations)
         Y = my_GLLE.fit_transform(calculate_again=embed_again)
+        Y = Y.T
+    elif method == "GLLE1":
+        my_GLLE1 = My_GLLE1(X.T, n_neighbors=10, n_components=n_components, path_save="./saved_files/GLLE/"+dataset+"/", max_itr=max_iterations)
+        Y = my_GLLE1.fit_transform(calculate_again=embed_again)
         Y = Y.T
     # plot_3D(Y, color, path_to_save="./saved_files/"+method+"/"+dataset+"/", name="embedding_3D")
     plot_2D(Y, color, path_to_save="./saved_files/"+method+"/"+dataset+"/", name="embedding")
@@ -75,6 +82,8 @@ def main():
         
 
 def plot_3D(X, color, path_to_save="./", name="temp"):
+    if not os.path.exists(path_to_save): 
+        os.makedirs(path_to_save)
     ax = plt.axes(projection='3d')
     ax.scatter3D(X[:, 0], X[:, 1], X[:, 2], c=color, cmap=plt.cm.Spectral)
     plt.xticks([]), plt.yticks([]), ax.set_zticks([])
