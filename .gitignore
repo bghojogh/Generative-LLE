@@ -1,9 +1,6 @@
 .vscode/
 __pycache__/
-datasets/S_curve/
-datasets/Sphere/
-datasets/Sphere_small/
-datasets/Swiss_roll/
+datasets/*/*
 saved_files/GLLE/
 saved_files/LLE/
 saved_files/GLLE_DirectSampling/
