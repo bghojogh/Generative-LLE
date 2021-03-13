@@ -1,6 +1,6 @@
 from my_LLE import My_LLE
 from my_GLLE import My_GLLE
-from My_GLLE_DirectSampling import My_GLLE_DirectSampling
+from my_GLLE_DirectSampling import My_GLLE_DirectSampling
 from sklearn import manifold, datasets
 import os
 import pickle
