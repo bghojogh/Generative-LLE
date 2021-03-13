@@ -1,6 +1,4 @@
 .vscode/
 __pycache__/
 datasets/*/*
-saved_files/GLLE/
-saved_files/LLE/
-saved_files/GLLE_DirectSampling/
+saved_files/*/*
