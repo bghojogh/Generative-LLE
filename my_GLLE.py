@@ -3,8 +3,7 @@ from sklearn.metrics.pairwise import pairwise_kernels
 from sklearn.metrics import pairwise_distances
 from sklearn.neighbors import kneighbors_graph as KNN   # https://scikit-learn.org/stable/modules/generated/sklearn.neighbors.kneighbors_graph.html
 from sklearn.neighbors import NearestNeighbors as KNN2  # https://scikit-learn.org/stable/modules/generated/sklearn.neighbors.NearestNeighbors.html  and  https://stackoverflow.com/questions/21052509/sklearn-knn-usage-with-a-user-defined-metric
-import os
-import pickle
+import utils
 
 
 class My_GLLE:
@@ -30,9 +29,9 @@ class My_GLLE:
         self.stochastic_linear_reconstruction(max_itr=self.max_itr_reconstruction, calculate_again=calculate_again)
         X_transformed = self.linear_embedding()
         if calculate_again:
-            self.save_variable(variable=X_transformed, name_of_variable="X_transformed", path_to_save=self.path_save)
+            utils.save_variable(variable=X_transformed, name_of_variable="X_transformed", path_to_save=self.path_save)
         else:
-            X_transformed = self.load_variable(name_of_variable="X_transformed", path=self.path_save)
+            X_transformed = utils.load_variable(name_of_variable="X_transformed", path=self.path_save)
         return X_transformed
 
     def generate_again(self, Sigma_linearReconstruction=None):
@@ -63,9 +62,9 @@ class My_GLLE:
             for sample_index in range(self.n_samples):
                 self.neighbor_indices[sample_index, :] = np.argwhere(connectivity_matrix[sample_index, :] == 1).ravel()
             # --- save KNN:
-            self.save_variable(variable=self.neighbor_indices, name_of_variable="neighbor_indices", path_to_save=self.path_save)
+            utils.save_variable(variable=self.neighbor_indices, name_of_variable="neighbor_indices", path_to_save=self.path_save)
         else:
-            self.neighbor_indices = self.load_variable(name_of_variable="neighbor_indices", path=self.path_save)
+            self.neighbor_indices = utils.load_variable(name_of_variable="neighbor_indices", path=self.path_save)
 
     # def linear_reconstruction(self):
     #     self.w_linearReconstruction = np.zeros((self.n_samples, self.n_neighbors))
@@ -111,11 +110,11 @@ class My_GLLE:
                     sigma_small = (1/(self.n_dimensions + self.n_neighbors)) * (np.trace(np.linalg.inv(X_neighbors @ X_neighbors.T) @ S1) + np.trace(S2))
                     Sigma_ = sigma_small * np.eye(self.n_neighbors)
                     self.Sigma_linearReconstruction[:, :, sample_index] = Sigma_.copy()
-            self.save_variable(variable=self.w_linearReconstruction, name_of_variable="w_linearReconstruction", path_to_save=self.path_save)
-            self.save_variable(variable=self.Sigma_linearReconstruction, name_of_variable="Sigma_linearReconstruction", path_to_save=self.path_save)
+            utils.save_variable(variable=self.w_linearReconstruction, name_of_variable="w_linearReconstruction", path_to_save=self.path_save)
+            utils.save_variable(variable=self.Sigma_linearReconstruction, name_of_variable="Sigma_linearReconstruction", path_to_save=self.path_save)
         else:
-            self.w_linearReconstruction = self.load_variable(name_of_variable="w_linearReconstruction", path=self.path_save)
-            self.Sigma_linearReconstruction = self.load_variable(name_of_variable="Sigma_linearReconstruction", path=self.path_save)
+            self.w_linearReconstruction = utils.load_variable(name_of_variable="w_linearReconstruction", path=self.path_save)
+            self.Sigma_linearReconstruction = utils.load_variable(name_of_variable="Sigma_linearReconstruction", path=self.path_save)
 
     def linear_embedding(self):
         self.W_linearEmbedding = np.zeros((self.n_samples, self.n_samples))
@@ -134,31 +133,3 @@ class My_GLLE:
             X_transformed = eig_vec[:, 1:] #--> note that first eigenvalue is zero
         X_transformed = X_transformed.T  #--> the obtained Y in Laplacian eigenmap is row-wise vectors, so we transpose it
         return X_transformed
-
-    def save_variable(self, variable, name_of_variable, path_to_save='./'):
-        # https://stackoverflow.com/questions/6568007/how-do-i-save-and-restore-multiple-variables-in-python
-        if not os.path.exists(path_to_save):  # https://stackoverflow.com/questions/273192/how-can-i-create-a-directory-if-it-does-not-exist
-            os.makedirs(path_to_save)
-        file_address = path_to_save + name_of_variable + '.pckl'
-        f = open(file_address, 'wb')
-        pickle.dump(variable, f)
-        f.close()
-
-    def load_variable(self, name_of_variable, path='./'):
-        # https://stackoverflow.com/questions/6568007/how-do-i-save-and-restore-multiple-variables-in-python
-        file_address = path + name_of_variable + '.pckl'
-        f = open(file_address, 'rb')
-        variable = pickle.load(f)
-        f.close()
-        return variable
-
-    def save_np_array_to_txt(self, variable, name_of_variable, path_to_save='./'):
-        if type(variable) is list:
-            variable = np.asarray(variable)
-        # https://stackoverflow.com/questions/22821460/numpy-save-2d-array-to-text-file/22822701
-        if not os.path.exists(path_to_save):  # https://stackoverflow.com/questions/273192/how-can-i-create-a-directory-if-it-does-not-exist
-            os.makedirs(path_to_save)
-        file_address = path_to_save + name_of_variable + '.txt'
-        np.set_printoptions(threshold=np.inf, linewidth=np.inf)  # turn off summarization, line-wrapping
-        with open(file_address, 'w') as f:
-            f.write(np.array2string(variable, separator=', '))

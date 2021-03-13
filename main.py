@@ -1,11 +1,10 @@
 from my_LLE import My_LLE
 from my_GLLE import My_GLLE
-from my_GLLE1 import My_GLLE1
+from My_GLLE_DirectSampling import My_GLLE_DirectSampling
 from sklearn import manifold, datasets
-import matplotlib.pyplot as plt
-from mpl_toolkits.mplot3d import Axes3D
 import os
 import pickle
+import utils
 from matplotlib import gridspec
 import numpy as np
 from sklearn.utils import check_random_state
@@ -13,13 +12,13 @@ from sklearn.utils import check_random_state
 
 def main():
     # settings:
-    method = "GLLE1"  #--> LLE_ready, LLE, GLLE, GLLE1
-    dataset = "Sphere_small"  #--> Swiss_roll, S_curve, Sphere, Sphere_small
-    make_dataset_again = True
-    embed_again = True
+    method = "GLLE_DirectSampling"  #--> LLE_ready, LLE, GLLE, GLLE_DirectSampling
+    dataset = "Swiss_roll"  #--> Swiss_roll, S_curve, Sphere, Sphere_small
+    make_dataset_again = False
+    embed_again = False
     generate_embedding_again = False
-    plot_manifold_interpolation = False
-    n_generation_of_embedding = 10
+    plot_manifold_interpolation = True
+    n_generation_of_embedding = 30
     max_iterations = 10
     n_components = 5
 
@@ -34,13 +33,13 @@ def main():
             X, color = make_sphere_dataset(n_samples=5000, severed_poles=True)
         elif dataset == "Sphere_small":
             X, color = make_sphere_dataset(n_samples=1000, severed_poles=True)
-        plot_3D(X, color, path_to_save='./datasets/'+dataset+"/", name="dataset")
-        save_variable(variable=X, name_of_variable="X", path_to_save='./datasets/'+dataset+"/")
-        save_variable(variable=color, name_of_variable="color", path_to_save='./datasets/'+dataset+"/")
+        utils.plot_3D(X, color, path_to_save='./datasets/'+dataset+"/", name="dataset")
+        utils.save_variable(variable=X, name_of_variable="X", path_to_save='./datasets/'+dataset+"/")
+        utils.save_variable(variable=color, name_of_variable="color", path_to_save='./datasets/'+dataset+"/")
     else:
-        X = load_variable(name_of_variable="X", path='./datasets/'+dataset+"/")
-        color = load_variable(name_of_variable="color", path='./datasets/'+dataset+"/")
-        plot_3D(X, color, path_to_save='./datasets/'+dataset+"/", name="dataset")
+        X = utils.load_variable(name_of_variable="X", path='./datasets/'+dataset+"/")
+        color = utils.load_variable(name_of_variable="color", path='./datasets/'+dataset+"/")
+        utils.plot_3D(X, color, path_to_save='./datasets/'+dataset+"/", name="dataset")
 
     if method == "LLE_ready":
         # https://scikit-learn.org/stable/auto_examples/manifold/plot_swissroll.html
@@ -48,59 +47,45 @@ def main():
         # Y, err = manifold.locally_linear_embedding(X, n_neighbors=10, n_components=n_components)  
         Y, err = manifold.locally_linear_embedding(X, n_neighbors=10, n_components=n_components, eigen_solver="dense")  
     elif method == "LLE":
-        my_LLE = My_LLE(X.T, n_neighbors=10, n_components=n_components, path_save="./saved_files/LLE/"+dataset+"/")
+        my_LLE = My_LLE(X.T, n_neighbors=10, n_components=n_components, path_save="./saved_files/"+method+"/"+dataset+"/")
         Y = my_LLE.fit_transform(calculate_again=embed_again)
         Y = Y.T
     elif method == "GLLE":
-        my_GLLE = My_GLLE(X.T, n_neighbors=10, n_components=n_components, path_save="./saved_files/GLLE/"+dataset+"/", max_itr_reconstruction=max_iterations)
+        my_GLLE = My_GLLE(X.T, n_neighbors=10, n_components=n_components, path_save="./saved_files/"+method+"/"+dataset+"/", max_itr_reconstruction=max_iterations)
         Y = my_GLLE.fit_transform(calculate_again=embed_again)
         Y = Y.T
-    elif method == "GLLE1":
-        my_GLLE1 = My_GLLE1(X.T, n_neighbors=10, n_components=n_components, path_save="./saved_files/GLLE/"+dataset+"/", max_itr=max_iterations)
-        Y = my_GLLE1.fit_transform(calculate_again=embed_again)
+    elif method == "GLLE_DirectSampling":
+        my_GLLE_DirectSampling = My_GLLE_DirectSampling(X.T, n_neighbors=10, n_components=n_components, path_save="./saved_files/"+method+"/"+dataset+"/", max_itr=max_iterations)
+        Y = my_GLLE_DirectSampling.fit_transform(calculate_again=embed_again)
         Y = Y.T
-    # plot_3D(Y, color, path_to_save="./saved_files/"+method+"/"+dataset+"/", name="embedding_3D")
-    plot_2D(Y, color, path_to_save="./saved_files/"+method+"/"+dataset+"/", name="embedding")
+    # utils.plot_3D(Y, color, path_to_save="./saved_files/"+method+"/"+dataset+"/", name="embedding_3D")
+    utils.plot_2D(Y, color, path_to_save="./saved_files/"+method+"/"+dataset+"/", name="embedding")
 
-    if method == "GLLE" and generate_embedding_again:
+    if (method == "GLLE" or method == "GLLE_DirectSampling") and generate_embedding_again:
         for itr in range(n_generation_of_embedding):
-            X_transformed = my_GLLE.generate_again()
+            if method == "GLLE":
+                X_transformed = my_GLLE.generate_again()
+            elif method == "GLLE_DirectSampling":
+                X_transformed = my_GLLE_DirectSampling.generate_again()
             Y = X_transformed.T
-            plot_2D(Y, color, path_to_save="./saved_files/GLLE/"+dataset+"/generation/", name="embedding_gen"+str(itr))
-            save_variable(variable=X_transformed, name_of_variable="X_transformed", path_to_save="./saved_files/GLLE/"+dataset+"/generation/gen"+str(itr)+"/")
+            utils.plot_2D(Y, color, path_to_save="./saved_files/"+method+"/"+dataset+"/generation/", name="embedding_gen"+str(itr))
+            utils.save_variable(variable=X_transformed, name_of_variable="X_transformed", path_to_save="./saved_files/"+method+"/"+dataset+"/generation/gen"+str(itr)+"/")
 
-    if method == "GLLE" and plot_manifold_interpolation:
+    if (method == "GLLE" or method == "GLLE_DirectSampling") and plot_manifold_interpolation:
         n_interpolation = 10
         # grid_ = np.linspace(-3, 3, n_interpolation)
         grid_ = np.linspace(-20, 20, n_interpolation)
         for itr, sigma_i_multiplication in enumerate(grid_):
-            Sigma_linearReconstruction = my_GLLE.Sigma_linearReconstruction[:, :, :] * sigma_i_multiplication
-            X_transformed = my_GLLE.generate_again(Sigma_linearReconstruction)
+            if method == "GLLE":
+                Sigma_linearReconstruction = my_GLLE.Sigma_linearReconstruction[:, :, :] * sigma_i_multiplication
+                X_transformed = my_GLLE.generate_again(Sigma_linearReconstruction)
+            elif method == "GLLE_DirectSampling":
+                Sigma_linearReconstruction = my_GLLE_DirectSampling.Cov_weights_linearReconstruction[:, :, :] * sigma_i_multiplication
+                X_transformed = my_GLLE_DirectSampling.generate_again(Sigma_linearReconstruction)
             Y = X_transformed.T
-            plot_2D(Y, color, path_to_save="./saved_files/GLLE/"+dataset+"/interpolation/", name="embedding_gen"+str(itr), title="sigma_multipler = "+str(sigma_i_multiplication))
-            save_variable(variable=X_transformed, name_of_variable="X_transformed", path_to_save="./saved_files/GLLE/"+dataset+"/interpolation/itr"+str(itr)+"/")
+            utils.plot_2D(Y, color, path_to_save="./saved_files/"+method+"/"+dataset+"/interpolation/", name="embedding_gen"+str(itr), title="sigma_multipler = "+str(sigma_i_multiplication))
+            utils.save_variable(variable=X_transformed, name_of_variable="X_transformed", path_to_save="./saved_files/"+method+"/"+dataset+"/interpolation/itr"+str(itr)+"/")
         
-
-def plot_3D(X, color, path_to_save="./", name="temp"):
-    if not os.path.exists(path_to_save): 
-        os.makedirs(path_to_save)
-    ax = plt.axes(projection='3d')
-    ax.scatter3D(X[:, 0], X[:, 1], X[:, 2], c=color, cmap=plt.cm.Spectral)
-    plt.xticks([]), plt.yticks([]), ax.set_zticks([])
-    plt.savefig(path_to_save+name+".png")
-    # plt.show()
-
-def plot_2D(X, color, path_to_save="./", name="temp", title=None):
-    if not os.path.exists(path_to_save): 
-        os.makedirs(path_to_save)
-    ax = plt.axes()
-    ax.scatter(X[:, 0], X[:, 1], c=color, cmap=plt.cm.Spectral)
-    plt.xticks([]), plt.yticks([])
-    if title is not None:
-        plt.title(title)
-    plt.savefig(path_to_save+name+".png")
-    # plt.show()
-    plt.close()
 
 def make_sphere_dataset(n_samples, severed_poles=False):
     #### https://scikit-learn.org/stable/auto_examples/manifold/plot_manifold_sphere.html
@@ -125,22 +110,6 @@ def make_sphere_dataset(n_samples, severed_poles=False):
     X = np.array([x, y, z]).T
     return X, colors
 
-def save_variable(variable, name_of_variable, path_to_save='./'):
-    # https://stackoverflow.com/questions/6568007/how-do-i-save-and-restore-multiple-variables-in-python
-    if not os.path.exists(path_to_save):  # https://stackoverflow.com/questions/273192/how-can-i-create-a-directory-if-it-does-not-exist
-        os.makedirs(path_to_save)
-    file_address = path_to_save + name_of_variable + '.pckl'
-    f = open(file_address, 'wb')
-    pickle.dump(variable, f)
-    f.close()
-
-def load_variable(name_of_variable, path='./'):
-    # https://stackoverflow.com/questions/6568007/how-do-i-save-and-restore-multiple-variables-in-python
-    file_address = path + name_of_variable + '.pckl'
-    f = open(file_address, 'rb')
-    variable = pickle.load(f)
-    f.close()
-    return variable
 
 if __name__ == "__main__":
     main()
