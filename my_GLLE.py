@@ -97,8 +97,9 @@ class My_GLLE:
                     x = self.X[:, sample_index].reshape((-1, 1))
                     #### E-step:
                     Sigma_ = self.Sigma_linearReconstruction[:, :, sample_index]
-                    expectation_w = Sigma_.T @ X_neighbors.T @ np.linalg.inv(X_neighbors @ Sigma_ @ X_neighbors.T) @ (x - mean_of_data)
-                    expectation_w_wT = Sigma_ - Sigma_.T @ X_neighbors.T @ np.linalg.inv(X_neighbors @ Sigma_ @ X_neighbors.T) @ X_neighbors @ Sigma_
+                    invserse_matrix_term = self.safe_inverse(X_neighbors @ Sigma_ @ X_neighbors.T)
+                    expectation_w = Sigma_.T @ X_neighbors.T @ invserse_matrix_term @ (x - mean_of_data)
+                    expectation_w_wT = Sigma_ - Sigma_.T @ X_neighbors.T @ invserse_matrix_term @ X_neighbors @ Sigma_
                     #### sampling weights:  
                     self.w_linearReconstruction[sample_index, :] = np.random.multivariate_normal(mean=expectation_w.ravel(), cov=expectation_w_wT, size=1)
                     #### M-step:
@@ -107,9 +108,13 @@ class My_GLLE:
                 S1 *= (1/self.n_samples)
                 S2 *= (1/self.n_samples)
                 for sample_index in range(self.n_samples):
-                    sigma_small = (1/(self.n_dimensions + self.n_neighbors)) * (np.trace(np.linalg.inv(X_neighbors @ X_neighbors.T) @ S1) + np.trace(S2))
+                    neighbor_indices_of_this_sample = self.neighbor_indices[sample_index, :].astype(int)
+                    X_neighbors = self.X[:, neighbor_indices_of_this_sample]
+                    # sigma_small = (1/(self.n_dimensions + self.n_neighbors)) * (np.trace(np.linalg.inv(X_neighbors @ X_neighbors.T) @ S1) + np.trace(S2))
+                    sigma_small = (1/(self.n_dimensions + self.n_neighbors)) * (np.trace(self.safe_inverse(X_neighbors @ X_neighbors.T) @ S1) + np.trace(S2))
                     Sigma_ = sigma_small * np.eye(self.n_neighbors)
                     self.Sigma_linearReconstruction[:, :, sample_index] = Sigma_.copy()
+                # self.Sigma_linearReconstruction /= np.max(self.Sigma_linearReconstruction)
             utils.save_variable(variable=self.w_linearReconstruction, name_of_variable="w_linearReconstruction", path_to_save=self.path_save)
             utils.save_variable(variable=self.Sigma_linearReconstruction, name_of_variable="Sigma_linearReconstruction", path_to_save=self.path_save)
         else:
@@ -133,3 +138,30 @@ class My_GLLE:
             X_transformed = eig_vec[:, 1:] #--> note that first eigenvalue is zero
         X_transformed = X_transformed.T  #--> the obtained Y in Laplacian eigenmap is row-wise vectors, so we transpose it
         return X_transformed
+
+    # def safe_inverse(self, matrix_):
+    #     multiplier = 1e-11
+    #     try_index = 0
+    #     while True:
+    #         try:
+    #             if try_index == 0:
+    #                 matrix_inv = np.linalg.inv(matrix_)
+    #             if try_index > 0:
+    #                 matrix_inv = np.linalg.inv(matrix_ + (np.eye(matrix_.shape[0]) * multiplier))
+    #             break
+    #         except Exception as ex:
+    #             # print("Warning: " + str(ex))
+    #             try_index += 1
+    #             multiplier *= 10
+    #             # print(multiplier)
+    #             if multiplier > 1:
+    #                 raise ValueError("Could not make the matrix full rank...")
+    #     return matrix_inv
+
+    def safe_inverse(self, matrix_):
+        try:
+            matrix_inv = np.linalg.inv(matrix_)
+        except Exception as ex:
+            # print("Warning: " + str(ex))
+            matrix_inv = np.linalg.pinv(matrix_)
+        return matrix_inv
