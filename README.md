@@ -18,7 +18,7 @@ pip install -r requirements.txt
 
 The user can choose the settings in the `settings.json` file. The options of settings in that file are as follows:
 
-`
+```shell
 ##################################### options for settings in the json file #####################################
 ================ method: 
   LLE ---> it is original deterministic LLE
@@ -49,7 +49,7 @@ The user can choose the settings in the `settings.json` file. The options of set
   0 ---> do not print logging information
   1 ---> print logging information of level one
   2 ---> print logging information of levels one and two
-`
+```
 
 ### Dataset loading
 
