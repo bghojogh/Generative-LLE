@@ -1,6 +1,6 @@
 # Generative Locally Linear Embedding (GLLE)
 
-## How to Use the Module
+## How to use the module
 
 ### Preparation
 
@@ -8,9 +8,9 @@ Make sure that you are in the root folder of module when running commands. You m
 
 `pip install -r requirements.txt`
 
-### Dataset Loading
+### Dataset loading
 
-### Module Running
+### Module running
 
 ## Theory of GLLE algorithms
 
@@ -33,7 +33,7 @@ Unfolding these manifolds using (a) original LLE, (b) GLLE with EM algorithm, an
 
 ![GLLE_generations](https://user-images.githubusercontent.com/66282117/113497394-a7400b00-94d1-11eb-9101-6d67b6bfefc4.png)
 
-## Paper/Module Citation
+## Paper/Module citation
 
 If you are using this module, please cite the following papers:
 
