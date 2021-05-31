@@ -64,7 +64,7 @@ The format of user data should be:
 
 ### Module running
 
-After installing the requirements, setting the settings in the json file, and putting the dataset in the User_data folder (or setting dataset to be one of the ready datasets), user should run the following command for running the module:
+After installing the requirements, setting the settings in the json file, and putting the dataset in the User_data folder (or setting dataset to be one of the ready datasets), user should run the following command for running the module (you should be in the root folder of module):
 ```shell
 python main.py
 ```
