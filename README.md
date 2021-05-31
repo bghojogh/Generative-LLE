@@ -30,11 +30,23 @@ Unfolding these manifolds using (a) original LLE, (b) GLLE with EM algorithm, an
 
 If you are using this module, please cite the following papers:
 
-The citation for theoretical paper:
+The bib citation for theoretical paper is:
 <pre>
 @InProceedings{ghojogh2021generative,
-  title = 	 {Generative Locally Linear Embedding},
-  author = 	 {Ghojogh, Benyamin and Ghodsi, Ali and Karray, Fakhri and Crowley, Mark} 
-  booktitle = 	 {arXiv preprint arXiv:2104.01525, Under review of IEEE SMC conference}
+  title={Generative Locally Linear Embedding},
+  author={Ghojogh, Benyamin and Ghodsi, Ali and Karray, Fakhri and Crowley, Mark},
+  booktitle={arXiv preprint arXiv:2104.01525, Under review of IEEE SMC conference},
+  year={2021}
+}
+</pre>
+
+The bib citation for the software module paper is:
+<pre>
+@article{ghojogh2021generativeSoftware,
+  title={Generative Locally Linear Embedding: A Module for Manifold Unfolding and Visualization},
+  author={Ghojogh, Benyamin and Ghodsi, Ali and Karray, Fakhri and Crowley, Mark},
+  journal={Software Impacts},
+  publisher={Elsevier},
+  year={2021}
 }
 </pre>
