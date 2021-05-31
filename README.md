@@ -8,7 +8,7 @@ This is the open-source code for the GLLE module. This open-source module can be
 
 ### Preparation
 
-The main dependencies are: `Python3, numpy, matplotlib, scikit-learn, scikit-image`
+The main dependencies are: `Python3, numpy, matplotlib, scikit-learn`
 
 Make sure that you are in the root folder of module when running commands. You may need to install the requirements:
 
