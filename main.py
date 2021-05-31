@@ -129,10 +129,6 @@ def main():
             if dataset == "digits":
                 digits = utils.load_variable(name_of_variable="digits", path='./datasets/'+dataset+"/")
 
-    # np.savetxt("data.csv", X, delimiter=",")
-    # np.savetxt("color.csv", color, delimiter=",")
-    # numpy.savetxt("color.csv", X.T, delimiter=",")
-
     ##################################### training the GLLE method #####################################
 
     if method == "LLE_ready":
