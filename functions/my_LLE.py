@@ -25,10 +25,10 @@ class My_LLE:
         self.path_save = path_save
 
     def fit_transform(self, calculate_again=True):
-        self.find_KNN(calculate_again=calculate_again)
-        self.linear_reconstruction(calculate_again=calculate_again)
-        X_transformed = self.linear_embedding()
         if calculate_again:
+            self.find_KNN(calculate_again=calculate_again)
+            self.linear_reconstruction(calculate_again=calculate_again)
+            X_transformed = self.linear_embedding()
             self.save_variable(variable=X_transformed, name_of_variable="X_transformed", path_to_save=self.path_save)
         else:
             X_transformed = self.load_variable(name_of_variable="X_transformed", path=self.path_save)

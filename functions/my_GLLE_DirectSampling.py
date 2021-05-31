@@ -1,7 +1,7 @@
 import numpy as np
-from my_LLE import My_LLE
+from functions.my_LLE import My_LLE
 import matplotlib.pyplot as plt
-import utils
+import functions.utils as utils
 
 
 class My_GLLE_DirectSampling:
@@ -21,9 +21,9 @@ class My_GLLE_DirectSampling:
         self.neighbor_indices = None
 
     def fit_transform(self, calculate_again=True):
-        self.stochastic_linear_reconstruction(calculate_again=calculate_again)
-        X_transformed = self.linear_embedding()
         if calculate_again:
+            self.stochastic_linear_reconstruction(calculate_again=calculate_again)
+            X_transformed = self.linear_embedding()
             utils.save_variable(variable=X_transformed, name_of_variable="X_transformed", path_to_save=self.path_save)
         else:
             X_transformed = utils.load_variable(name_of_variable="X_transformed", path=self.path_save)

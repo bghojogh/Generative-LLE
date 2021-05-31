@@ -1,17 +1,17 @@
-from my_LLE import My_LLE
-from my_GLLE import My_GLLE
-from my_GLLE_DirectSampling import My_GLLE_DirectSampling
+from functions.my_LLE import My_LLE
+from functions.my_GLLE import My_GLLE
+from functions.my_GLLE_DirectSampling import My_GLLE_DirectSampling
+import functions.load_datasets
+import functions.utils as utils
 from sklearn import manifold, datasets
-import utils
 import numpy as np
 from sklearn.preprocessing import StandardScaler
-import load_datasets
 
 
 def main():
     # settings:
     method = "GLLE"  #--> LLE_ready, LLE, GLLE, GLLE_DirectSampling
-    dataset = "Swiss_roll"  #--> Swiss_roll, Swiss_roll_hole, S_curve, Sphere, Sphere_small, digits, MNIST, ORL_glasses
+    dataset = "Sphere"  #--> Swiss_roll, Swiss_roll_hole, S_curve, Sphere, Sphere_small, digits, MNIST, ORL_glasses
     make_dataset_again = False
     embed_again = True
     generate_embedding_again = False

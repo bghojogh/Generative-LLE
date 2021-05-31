@@ -3,7 +3,7 @@ from sklearn.metrics.pairwise import pairwise_kernels
 from sklearn.metrics import pairwise_distances
 from sklearn.neighbors import kneighbors_graph as KNN   # https://scikit-learn.org/stable/modules/generated/sklearn.neighbors.kneighbors_graph.html
 from sklearn.neighbors import NearestNeighbors as KNN2  # https://scikit-learn.org/stable/modules/generated/sklearn.neighbors.NearestNeighbors.html  and  https://stackoverflow.com/questions/21052509/sklearn-knn-usage-with-a-user-defined-metric
-import utils
+import functions.utils as utils
 
 
 class My_GLLE:
@@ -25,10 +25,10 @@ class My_GLLE:
         self.max_itr_reconstruction = max_itr_reconstruction
 
     def fit_transform(self, calculate_again=True):
-        self.find_KNN(calculate_again=calculate_again)
-        self.stochastic_linear_reconstruction(max_itr=self.max_itr_reconstruction, calculate_again=calculate_again)
-        X_transformed = self.linear_embedding()
         if calculate_again:
+            self.find_KNN(calculate_again=calculate_again)
+            self.stochastic_linear_reconstruction(max_itr=self.max_itr_reconstruction, calculate_again=calculate_again)
+            X_transformed = self.linear_embedding()
             utils.save_variable(variable=X_transformed, name_of_variable="X_transformed", path_to_save=self.path_save)
         else:
             X_transformed = utils.load_variable(name_of_variable="X_transformed", path=self.path_save)

@@ -3,7 +3,7 @@ from sklearn.utils import check_random_state
 from matplotlib import gridspec
 import os
 import pickle
-import utils
+import functions.utils as utils
 from sklearn.preprocessing import StandardScaler
 from PIL import Image
 from skimage.transform import resize
