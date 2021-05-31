@@ -2,7 +2,7 @@
 
 ## About
 
-This open-source module can be used for manifold unfolding and visualization. It generates various unfoldings in an stochastic way where the generated unfoldings are related to the deterministic Locally Linear Embedding (LLE). For more information about the original deterministic LLE, one can refer to our tutorial available at https://arxiv.org/abs/2011.10925.
+This is the open-source code for the GLLE module. This open-source module can be used for manifold unfolding and visualization. It generates various unfoldings in an stochastic way where the generated unfoldings are related to the deterministic Locally Linear Embedding (LLE). For more information about the original deterministic LLE, one can refer to our tutorial available at https://arxiv.org/abs/2011.10925.
 
 ## How to use the module
 
@@ -20,9 +20,7 @@ pip install -r requirements.txt
 
 ### Module running
 
-## Theory of GLLE algorithms
-
-This is the open-source code for the GLLE module. 
+## Theory of GLLE algorithms used in module
 
 The theory of this module is explained in detail in the following paper:
 
