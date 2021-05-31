@@ -11,9 +11,7 @@ Make sure that you are in the root folder of module when running commands. You m
 `pip install -r requirements.txt`
 
 ```shell
-sudo add-apt-repository ppa:deadsnakes/ppa
-sudo apt-get update
-sudo apt-get install python3.6
+pip install -r requirements.txt
 ```
 
 ### Dataset loading
