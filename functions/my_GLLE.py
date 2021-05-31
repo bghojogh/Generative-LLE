@@ -8,7 +8,7 @@ import functions.utils as utils
 
 class My_GLLE:
 
-    def __init__(self, X, n_neighbors=10, n_components=None, path_save="./", max_itr_reconstruction=100):
+    def __init__(self, X, n_neighbors=10, n_components=None, path_save="./", max_itr_reconstruction=100, verbosity=0):
         # X: rows are features and columns are samples
         self.n_components = n_components
         self.X = X
@@ -23,18 +23,24 @@ class My_GLLE:
         self.w_linearReconstruction_outOfSample = None
         self.path_save = path_save
         self.max_itr_reconstruction = max_itr_reconstruction
+        self.verbosity = verbosity
 
     def fit_transform(self, calculate_again=True):
         if calculate_again:
             self.find_KNN(calculate_again=calculate_again)
+            if self.verbosity >= 1: print("Finding KNN graph is done...")
             self.stochastic_linear_reconstruction(max_itr=self.max_itr_reconstruction, calculate_again=calculate_again)
+            if self.verbosity >= 1: print("Linear reconstruction is done...")
             X_transformed = self.linear_embedding()
+            if self.verbosity >= 1: print("Linear embedding is done...")
             utils.save_variable(variable=X_transformed, name_of_variable="X_transformed", path_to_save=self.path_save)
         else:
+            if self.verbosity >= 1: print("Loading previous embedding...")
             X_transformed = utils.load_variable(name_of_variable="X_transformed", path=self.path_save)
         return X_transformed
 
     def generate_again(self, Sigma_linearReconstruction=None):
+        if self.verbosity >= 1: print("Generating a new embedding (unfolding)...")
         mean_of_data = self.X.mean(axis=1).reshape((-1, 1))
         for sample_index in range(self.n_samples):
             neighbor_indices_of_this_sample = self.neighbor_indices[sample_index, :].astype(int)
@@ -88,7 +94,7 @@ class My_GLLE:
             for sample_index in range(self.n_samples):
                 self.Sigma_linearReconstruction[:, :, sample_index] = np.eye(self.n_neighbors)
             for iteration_index in range(max_itr):
-                print("iteration: {} in linear reconstruction".format(iteration_index))
+                if self.verbosity >= 2: print("iteration: {} in linear reconstruction".format(iteration_index))
                 S1 = np.zeros((self.n_dimensions, self.n_dimensions))
                 S2 = np.zeros((self.n_neighbors, self.n_neighbors))
                 for sample_index in range(self.n_samples):
@@ -162,6 +168,6 @@ class My_GLLE:
         try:
             matrix_inv = np.linalg.inv(matrix_)
         except Exception as ex:
-            # print("Warning: " + str(ex))
+            if self.verbosity >= 2: print("Warning: " + str(ex))
             matrix_inv = np.linalg.pinv(matrix_)
         return matrix_inv

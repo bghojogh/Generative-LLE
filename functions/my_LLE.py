@@ -3,13 +3,12 @@ from sklearn.metrics.pairwise import pairwise_kernels
 from sklearn.metrics import pairwise_distances
 from sklearn.neighbors import kneighbors_graph as KNN   # https://scikit-learn.org/stable/modules/generated/sklearn.neighbors.kneighbors_graph.html
 from sklearn.neighbors import NearestNeighbors as KNN2  # https://scikit-learn.org/stable/modules/generated/sklearn.neighbors.NearestNeighbors.html  and  https://stackoverflow.com/questions/21052509/sklearn-knn-usage-with-a-user-defined-metric
-import os
-import pickle
+import functions.utils as utils
 
 
 class My_LLE:
 
-    def __init__(self, X, n_neighbors=10, n_components=None, path_save="./"):
+    def __init__(self, X, n_neighbors=10, n_components=None, path_save="./", verbosity=0):
         # X: rows are features and columns are samples
         self.n_components = n_components
         self.X = X
@@ -23,21 +22,29 @@ class My_LLE:
         self.neighbor_indices_for_outOfSample = None
         self.w_linearReconstruction_outOfSample = None
         self.path_save = path_save
+        self.verbosity = verbosity
 
     def fit_transform(self, calculate_again=True):
         if calculate_again:
             self.find_KNN(calculate_again=calculate_again)
+            if self.verbosity >= 1: print("Finding KNN graph is done...")
             self.linear_reconstruction(calculate_again=calculate_again)
+            if self.verbosity >= 1: print("Linear reconstruction is done...")
             X_transformed = self.linear_embedding()
-            self.save_variable(variable=X_transformed, name_of_variable="X_transformed", path_to_save=self.path_save)
+            if self.verbosity >= 1: print("Linear embedding is done...")
+            utils.save_variable(variable=X_transformed, name_of_variable="X_transformed", path_to_save=self.path_save)
         else:
-            X_transformed = self.load_variable(name_of_variable="X_transformed", path=self.path_save)
+            if self.verbosity >= 1: print("Loading previous embedding...")
+            X_transformed = utils.load_variable(name_of_variable="X_transformed", path=self.path_save)
         return X_transformed
 
     def fit_transform_outOfSample(self, data_outOfSample, X_training_transformed):
         self.find_KNN_for_outOfSample(data_outOfSample=data_outOfSample, calculate_again=True)
+        if self.verbosity >= 1: print("Out-of-sample KNN graph is done...")
         self.linear_reconstruction_outOfSample(data_outOfSample)
+        if self.verbosity >= 1: print("Out-of-sample linear reconstruction is done...")
         data_outOfSample_transformed = self.linear_embedding_outOfSample(X_training_transformed=X_training_transformed)
+        if self.verbosity >= 1: print("Out-of-sample linear embedding is done...")
         return data_outOfSample_transformed
 
     def find_KNN(self, calculate_again=True):
@@ -50,9 +57,9 @@ class My_LLE:
             for sample_index in range(self.n_samples):
                 self.neighbor_indices[sample_index, :] = np.argwhere(connectivity_matrix[sample_index, :] == 1).ravel()
             # --- save KNN:
-            self.save_variable(variable=self.neighbor_indices, name_of_variable="neighbor_indices", path_to_save=self.path_save)
+            utils.save_variable(variable=self.neighbor_indices, name_of_variable="neighbor_indices", path_to_save=self.path_save)
         else:
-            self.neighbor_indices = self.load_variable(name_of_variable="neighbor_indices", path=self.path_save)
+            self.neighbor_indices = utils.load_variable(name_of_variable="neighbor_indices", path=self.path_save)
 
     def linear_reconstruction(self, calculate_again=True):
         if calculate_again:
@@ -68,9 +75,9 @@ class My_LLE:
                 numinator = (np.linalg.inv(G)).dot(ones_vector)
                 denominator = (ones_vector.T).dot(np.linalg.inv(G)).dot(ones_vector)
                 self.w_linearReconstruction[sample_index, :] = ((1 / denominator) * numinator).ravel()
-            self.save_variable(variable=self.w_linearReconstruction, name_of_variable="w_linearReconstruction", path_to_save=self.path_save)
+            utils.save_variable(variable=self.w_linearReconstruction, name_of_variable="w_linearReconstruction", path_to_save=self.path_save)
         else:
-            self.w_linearReconstruction = self.load_variable(name_of_variable="w_linearReconstruction", path=self.path_save)
+            self.w_linearReconstruction = utils.load_variable(name_of_variable="w_linearReconstruction", path=self.path_save)
 
     def linear_embedding(self):
         self.W_linearEmbedding = np.zeros((self.n_samples, self.n_samples))
@@ -106,9 +113,9 @@ class My_LLE:
                 indices_of_neighbors_of_this_outOfSample_image = argsort_distances[:self.n_neighbors]
                 self.neighbor_indices_for_outOfSample[image_index_1, :] = indices_of_neighbors_of_this_outOfSample_image
             # --- save KNN:
-            self.save_variable(variable=self.neighbor_indices_for_outOfSample, name_of_variable="neighbor_indices_for_outOfSample", path_to_save=self.path_save)
+            utils.save_variable(variable=self.neighbor_indices_for_outOfSample, name_of_variable="neighbor_indices_for_outOfSample", path_to_save=self.path_save)
         else:
-            self.neighbor_indices_for_outOfSample = self.load_variable(name_of_variable="neighbor_indices_for_outOfSample", path=self.path_save)
+            self.neighbor_indices_for_outOfSample = utils.load_variable(name_of_variable="neighbor_indices_for_outOfSample", path=self.path_save)
 
     def linear_reconstruction_outOfSample(self, data_outOfSample):
         self.w_linearReconstruction_outOfSample = np.zeros((self.n_samples_outOfSample, self.n_neighbors))
@@ -138,31 +145,3 @@ class My_LLE:
             Y_outOfSample[outOfSample_image_index, :] = summation.ravel()
         data_outOfSample_transformed = Y_outOfSample.T
         return data_outOfSample_transformed
-
-    def save_variable(self, variable, name_of_variable, path_to_save='./'):
-        # https://stackoverflow.com/questions/6568007/how-do-i-save-and-restore-multiple-variables-in-python
-        if not os.path.exists(path_to_save):  # https://stackoverflow.com/questions/273192/how-can-i-create-a-directory-if-it-does-not-exist
-            os.makedirs(path_to_save)
-        file_address = path_to_save + name_of_variable + '.pckl'
-        f = open(file_address, 'wb')
-        pickle.dump(variable, f)
-        f.close()
-
-    def load_variable(self, name_of_variable, path='./'):
-        # https://stackoverflow.com/questions/6568007/how-do-i-save-and-restore-multiple-variables-in-python
-        file_address = path + name_of_variable + '.pckl'
-        f = open(file_address, 'rb')
-        variable = pickle.load(f)
-        f.close()
-        return variable
-
-    def save_np_array_to_txt(self, variable, name_of_variable, path_to_save='./'):
-        if type(variable) is list:
-            variable = np.asarray(variable)
-        # https://stackoverflow.com/questions/22821460/numpy-save-2d-array-to-text-file/22822701
-        if not os.path.exists(path_to_save):  # https://stackoverflow.com/questions/273192/how-can-i-create-a-directory-if-it-does-not-exist
-            os.makedirs(path_to_save)
-        file_address = path_to_save + name_of_variable + '.txt'
-        np.set_printoptions(threshold=np.inf, linewidth=np.inf)  # turn off summarization, line-wrapping
-        with open(file_address, 'w') as f:
-            f.write(np.array2string(variable, separator=', '))

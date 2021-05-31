@@ -9,16 +9,21 @@ from sklearn.preprocessing import StandardScaler
 
 
 def main():
-    # settings:
+
+    ##################################### loading settings #####################################
+
     method = "GLLE"  #--> LLE_ready, LLE, GLLE, GLLE_DirectSampling
     dataset = "Sphere"  #--> Swiss_roll, Swiss_roll_hole, S_curve, Sphere, Sphere_small, digits, MNIST, ORL_glasses
     make_dataset_again = False
     embed_again = True
     generate_embedding_again = False
-    plot_manifold_interpolation = False
+    analyze_covariance_scales = False
     n_generation_of_embedding = 30
     max_iterations = 10
     n_components = 5
+    verbosity = 0   #--> 0: do not print logging information, 1: print logging information
+
+    ##################################### loading or generating dataset #####################################
 
     if make_dataset_again:
         labels, color = None, None
@@ -74,6 +79,7 @@ def main():
         if dataset == "digits":
             digits = utils.load_variable(name_of_variable="digits", path='./datasets/'+dataset+"/")
 
+    ##################################### training the GLLE method #####################################
 
     if method == "LLE_ready":
         # https://scikit-learn.org/stable/auto_examples/manifold/plot_swissroll.html
@@ -81,17 +87,20 @@ def main():
         # Y, err = manifold.locally_linear_embedding(X, n_neighbors=10, n_components=n_components)  
         Y, err = manifold.locally_linear_embedding(X, n_neighbors=10, n_components=n_components, eigen_solver="dense")  
     elif method == "LLE":
-        my_LLE = My_LLE(X.T, n_neighbors=10, n_components=n_components, path_save="./saved_files/"+method+"/"+dataset+"/")
+        my_LLE = My_LLE(X.T, n_neighbors=10, n_components=n_components, path_save="./saved_files/"+method+"/"+dataset+"/", verbosity=verbosity)
         Y = my_LLE.fit_transform(calculate_again=embed_again)
         Y = Y.T
     elif method == "GLLE":
-        my_GLLE = My_GLLE(X.T, n_neighbors=10, n_components=n_components, path_save="./saved_files/"+method+"/"+dataset+"/", max_itr_reconstruction=max_iterations)
+        my_GLLE = My_GLLE(X.T, n_neighbors=10, n_components=n_components, path_save="./saved_files/"+method+"/"+dataset+"/", max_itr_reconstruction=max_iterations, verbosity=verbosity)
         Y = my_GLLE.fit_transform(calculate_again=embed_again)
         Y = Y.T
     elif method == "GLLE_DirectSampling":
-        my_GLLE_DirectSampling = My_GLLE_DirectSampling(X.T, n_neighbors=10, n_components=n_components, path_save="./saved_files/"+method+"/"+dataset+"/", max_itr=max_iterations)
+        my_GLLE_DirectSampling = My_GLLE_DirectSampling(X.T, n_neighbors=10, n_components=n_components, path_save="./saved_files/"+method+"/"+dataset+"/", max_itr=max_iterations, verbosity=verbosity)
         Y = my_GLLE_DirectSampling.fit_transform(calculate_again=embed_again)
         Y = Y.T
+    
+    ##################################### plot the trained unfolding #####################################
+    
     if dataset in ["Swiss_roll", "Swiss_roll_hole", "S_curve", "Sphere", "Sphere_small"]:
         # utils.plot_3D(Y, color, path_to_save="./saved_files/"+method+"/"+dataset+"/", name="embedding_3D")
         utils.plot_2D(Y, color, path_to_save="./saved_files/"+method+"/"+dataset+"/", name="embedding")
@@ -100,6 +109,8 @@ def main():
         utils.plot_2D_with_labels(Y, labels, path_to_save="./saved_files/"+method+"/"+dataset+"/", name="embedding")
         # utils.plot_embedding_with_labels_and_images(Y, labels, images=digits.images)
         # utils.plot_components(Y.T, labels, which_dimensions_to_plot=[0,1], images=digits.images, image_scale=2, markersize=10, thumb_frac=0.05, cmap='gray')
+
+    ##################################### generating unfoldings #####################################
 
     if (method == "GLLE" or method == "GLLE_DirectSampling") and generate_embedding_again:
         for itr in range(n_generation_of_embedding):
@@ -115,7 +126,9 @@ def main():
                 utils.plot_2D_with_labels(Y, labels, path_to_save="./saved_files/"+method+"/"+dataset+"/generation/", name="embedding_gen"+str(itr))
             utils.save_variable(variable=X_transformed, name_of_variable="X_transformed", path_to_save="./saved_files/"+method+"/"+dataset+"/generation/gen"+str(itr)+"/")
 
-    if (method == "GLLE" or method == "GLLE_DirectSampling") and plot_manifold_interpolation:
+    ##################################### analyzing the impact of covariance scales #####################################
+
+    if (method == "GLLE" or method == "GLLE_DirectSampling") and analyze_covariance_scales:
         # n_interpolation = 5
         # grid_ = np.linspace(0.01, 10, n_interpolation)
         grid_ = [0.01, 0.1, 1, 5, 10]

@@ -140,8 +140,6 @@ def read_MNIST_dataset(MNIST_subset_cardinality_training, read_dataset_again=Tru
     X = data
     y = labels
     y = y.ravel()
-    # print(np.max(X))
-    # input("hi")
     return X, y, X_notNormalized
 
 def read_ORL_glasses_dataset(scale=1):

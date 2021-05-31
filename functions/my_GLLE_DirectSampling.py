@@ -17,22 +17,26 @@ class My_GLLE_DirectSampling:
         self.w_linearReconstruction = None
         self.Cov_weights_linearReconstruction = None
         self.mean_weights_linearReconstruction = None
-        self.verbosity = verbosity
         self.neighbor_indices = None
+        self.verbosity = verbosity
 
     def fit_transform(self, calculate_again=True):
         if calculate_again:
             self.stochastic_linear_reconstruction(calculate_again=calculate_again)
+            if self.verbosity >= 1: print("Linear reconstruction is done...")
             X_transformed = self.linear_embedding()
+            if self.verbosity >= 1: print("Linear embedding is done...")
             utils.save_variable(variable=X_transformed, name_of_variable="X_transformed", path_to_save=self.path_save)
         else:
+            if self.verbosity >= 1: print("Loading previous embedding...")
             X_transformed = utils.load_variable(name_of_variable="X_transformed", path=self.path_save)
         return X_transformed
 
     def generate_again(self, Cov_weights_linearReconstruction=None, mean_weights_linearReconstruction=None):
+        if self.verbosity >= 1: print("Generating a new embedding (unfolding)...")
         for sample_index in range(self.n_samples):
             if self.verbosity >= 1 and sample_index % 1000 == 0:
-                print("processing sample {}/{}".format(sample_index,self.n_samples))
+                if self.verbosity >= 2: print("processing sample {}/{}".format(sample_index,self.n_samples))
             if Cov_weights_linearReconstruction is None:
                 cov_w = self.Cov_weights_linearReconstruction[:, :, sample_index]
             else:
@@ -60,7 +64,7 @@ class My_GLLE_DirectSampling:
             for sample_index in range(self.n_samples):
                 self.Cov_weights_linearReconstruction[:, :, sample_index] = np.eye(self.n_neighbors)
             for sample_index in range(self.n_samples):
-                if self.verbosity >= 1 and sample_index % 1000 == 0:
+                if self.verbosity >= 2 and sample_index % 1000 == 0:
                     print("processing sample {}/{}".format(sample_index,self.n_samples))
                 neighbor_indices_of_this_sample = self.neighbor_indices[sample_index, :].astype(int)
                 X_neighbors = self.X[:, neighbor_indices_of_this_sample]
