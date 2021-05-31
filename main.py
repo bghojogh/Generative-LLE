@@ -6,6 +6,7 @@ import functions.utils as utils
 from sklearn import manifold, datasets
 import numpy as np
 from sklearn.preprocessing import StandardScaler
+from numpy import genfromtxt
 
 import json
 with open('settings.json') as json_file:
@@ -101,18 +102,36 @@ def main():
         if dataset == "digits":
             utils.save_variable(variable=digits, name_of_variable="digits", path_to_save='./datasets/'+dataset+"/")
     else:
-        X = utils.load_variable(name_of_variable="X", path='./datasets/'+dataset+"/")
-        try:
-            color = utils.load_variable(name_of_variable="color", path='./datasets/'+dataset+"/")
-            utils.plot_3D(X, color, path_to_save='./datasets/'+dataset+"/", name="dataset")
-        except:
-            color = None
-        try:
-            labels = utils.load_variable(name_of_variable="labels", path='./datasets/'+dataset+"/")
-        except:
-            labels = None
-        if dataset == "digits":
-            digits = utils.load_variable(name_of_variable="digits", path='./datasets/'+dataset+"/")
+        if dataset == "User_data":
+            try: 
+                X = genfromtxt("datasets/User_data/data.csv", delimiter=',')
+            except Exception as ex:
+                raise ValueError("There is no any user data in the dataset folder!")
+            try: 
+                color = genfromtxt("datasets/User_data/color.csv", delimiter=',')
+            except Exception as ex:
+                color = None
+            try: 
+                labels = genfromtxt("datasets/User_data/labels.csv", delimiter=',')
+            except Exception as ex:
+                labels = None
+        else:
+            X = utils.load_variable(name_of_variable="X", path='./datasets/'+dataset+"/")
+            try:
+                color = utils.load_variable(name_of_variable="color", path='./datasets/'+dataset+"/")
+                utils.plot_3D(X, color, path_to_save='./datasets/'+dataset+"/", name="dataset")
+            except:
+                color = None
+            try:
+                labels = utils.load_variable(name_of_variable="labels", path='./datasets/'+dataset+"/")
+            except:
+                labels = None
+            if dataset == "digits":
+                digits = utils.load_variable(name_of_variable="digits", path='./datasets/'+dataset+"/")
+
+    # np.savetxt("data.csv", X, delimiter=",")
+    # np.savetxt("color.csv", color, delimiter=",")
+    # numpy.savetxt("color.csv", X.T, delimiter=",")
 
     ##################################### training the GLLE method #####################################
 
@@ -144,6 +163,9 @@ def main():
         utils.plot_2D_with_labels(Y, labels, path_to_save="./saved_files/"+method+"/"+dataset+"/", name="embedding")
         # utils.plot_embedding_with_labels_and_images(Y, labels, images=digits.images)
         # utils.plot_components(Y.T, labels, which_dimensions_to_plot=[0,1], images=digits.images, image_scale=2, markersize=10, thumb_frac=0.05, cmap='gray')
+    elif dataset == "User_data":
+        # utils.plot_3D(Y, color, path_to_save="./saved_files/"+method+"/"+dataset+"/", name="embedding_3D")
+        utils.plot_2D(Y, color, path_to_save="./saved_files/"+method+"/"+dataset+"/", name="embedding")
 
     ##################################### generating unfoldings #####################################
 

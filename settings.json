@@ -1,6 +1,6 @@
 {
 "method": "GLLE", 
-"dataset": "Sphere",
+"dataset": "User_data",
 "make_dataset_again": "False",
 "embed_again": "True",
 "generate_embedding_again": "False",
