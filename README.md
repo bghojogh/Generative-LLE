@@ -19,7 +19,6 @@ pip install -r requirements.txt
 The user can choose the settings in the `settings.json` file. The options of settings in that file are as follows:
 
 ```shell
-##################################### options for settings in the json file #####################################
 ================ method: 
   LLE ---> it is original deterministic LLE
   GLLE ---> it is GLLE with EM algorithm
