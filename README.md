@@ -16,6 +16,41 @@ Make sure that you are in the root folder of module when running commands. You m
 pip install -r requirements.txt
 ```
 
+The user can choose the settings in the `settings.json` file. The options of settings in that file are as follows:
+
+`
+##################################### options for settings in the json file #####################################
+================ method: 
+  LLE ---> it is original deterministic LLE
+  GLLE ---> it is GLLE with EM algorithm
+  GLLE_DirectSampling ---> it is GLLE with direct sampling
+================ dataset:
+  Swiss_roll, Swiss_roll_hole, S_curve, Sphere, Sphere_small ---> these are ready toy datasets
+  User_data ---> User can put their dataset as a csv files named "data" (row-wise data) and an optional "colors" file
+================ make_dataset_again:
+  True ---> generate the ready toy datasets again (with new possible data settings)
+  False ---> load the previously generated toy dataset (it will throw error if you have not generated a dataset before)
+================ embed_again:
+  True ---> train the embedding (unfolding) again
+  False ---> do not train again and load the previous training phase. This can be useful for when user wants to generate several unfoldings and does not want to train again
+================ generate_embedding_again:
+  True ---> generate [multiple] unfoldings (embeddings)
+  False ---> do not generate unfoldings (embeddings)
+================ analyze_covariance_scales:
+  True ---> generate unfoldings for various scales of covariance matrix for the sake of analysis
+  False ---> do not generate unfoldings for various scales of covariance matrix
+================ n_generation_of_embedding:
+  A positive integer ---> it is the number of unfoldings (embeddings) to generate
+================ max_iterations:
+  A positive integer ---> maximum number of iterations for EM algorithm in stochastic linear reconstruction of GLLE
+================ n_components:
+  A positive integer (between 1 and dimensionality of data) ---> the dimensionality of unfolding (embedding)
+================ verbosity:
+  0 ---> do not print logging information
+  1 ---> print logging information of level one
+  2 ---> print logging information of levels one and two
+`
+
 ### Dataset loading
 
 ### Module running
