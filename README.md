@@ -2,6 +2,10 @@
 
 ## How to use the module
 
+### About
+
+This open-source module can be used for manifold unfolding and visualization. It generates various unfoldings in an stochastic way where the generated unfoldings are related to the deterministic Locally Linear Embedding (LLE). For more information about the original deterministic LLE, one can refer to our tutorial available at https://arxiv.org/abs/2011.10925.
+
 ### Preparation
 
 The main dependencies are: `Python3, numpy, matplotlib, scikit-learn, scikit-image`
