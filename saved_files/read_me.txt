@@ -1,1 +1,1 @@
-saved files are removed from folder for uploading.
+The output of algorithms (the plot and data of embeddings/unfoldings) will be saved here. 
