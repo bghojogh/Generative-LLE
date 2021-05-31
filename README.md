@@ -4,6 +4,8 @@
 
 ### Preparation
 
+The main dependencies are: Python3, numpy, matplotlib, scikit-learn, scikit-image
+
 Make sure that you are in the root folder of module when running commands. You may need to install the requirements:
 
 `pip install -r requirements.txt`
