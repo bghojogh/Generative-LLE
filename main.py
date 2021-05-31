@@ -7,21 +7,56 @@ from sklearn import manifold, datasets
 import numpy as np
 from sklearn.preprocessing import StandardScaler
 
+import json
+with open('settings.json') as json_file:
+    settings = json.load(json_file)
+
+# ##################################### options for settings in the json file #####################################
+# ================ method: 
+#   LLE ---> it is original deterministic LLE
+#   GLLE ---> it is GLLE with EM algorithm
+#   GLLE_DirectSampling ---> it is GLLE with direct sampling
+# ================ dataset:
+#   Swiss_roll, Swiss_roll_hole, S_curve, Sphere, Sphere_small ---> these are ready toy datasets
+#   User_data ---> User can put their dataset as a csv files named "data" (row-wise data) and an optional "colors" file
+# ================ make_dataset_again:
+#   True ---> generate the ready toy datasets again (with new possible data settings)
+#   False ---> load the previously generated toy dataset (it will throw error if you have not generated a dataset before)
+# ================ embed_again:
+#   True ---> train the embedding (unfolding) again
+#   False ---> do not train again and load the previous training phase. This can be useful for when user wants to generate several unfoldings and does not want to train again
+# ================ generate_embedding_again:
+#   True ---> generate [multiple] unfoldings (embeddings)
+#   False ---> do not generate unfoldings (embeddings)
+# ================ analyze_covariance_scales:
+#   True ---> generate unfoldings for various scales of covariance matrix for the sake of analysis
+#   False ---> do not generate unfoldings for various scales of covariance matrix
+# ================ n_generation_of_embedding:
+#   A positive integer ---> it is the number of unfoldings (embeddings) to generate
+# ================ max_iterations:
+#   A positive integer ---> maximum number of iterations for EM algorithm in stochastic linear reconstruction of GLLE
+# ================ n_components:
+#   A positive integer (between 1 and dimensionality of data) ---> the dimensionality of unfolding (embedding)
+# ================ verbosity:
+#   0 ---> do not print logging information
+#   1 ---> print logging information of level one
+#   2 ---> print logging information of levels one and two
+
 
 def main():
 
     ##################################### loading settings #####################################
 
-    method = "GLLE"  #--> LLE_ready, LLE, GLLE, GLLE_DirectSampling
-    dataset = "Sphere"  #--> Swiss_roll, Swiss_roll_hole, S_curve, Sphere, Sphere_small, digits, MNIST, ORL_glasses
-    make_dataset_again = False
-    embed_again = True
-    generate_embedding_again = False
-    analyze_covariance_scales = False
-    n_generation_of_embedding = 30
-    max_iterations = 10
-    n_components = 5
-    verbosity = 0   #--> 0: do not print logging information, 1: print logging information
+    method = settings["method"]
+    dataset = settings["dataset"]
+    make_dataset_again = True if settings["make_dataset_again"] == "True" else False
+    embed_again = True if settings["embed_again"] == "True" else False
+    generate_embedding_again = True if settings["generate_embedding_again"] == "True" else False
+    analyze_covariance_scales = True if settings["analyze_covariance_scales"] == "True" else False
+    n_generation_of_embedding = settings["n_generation_of_embedding"]
+    max_iterations = settings["max_iterations"]
+    n_components = settings["n_components"]
+    verbosity = settings["verbosity"]
 
     ##################################### loading or generating dataset #####################################
 
@@ -95,7 +130,7 @@ def main():
         Y = my_GLLE.fit_transform(calculate_again=embed_again)
         Y = Y.T
     elif method == "GLLE_DirectSampling":
-        my_GLLE_DirectSampling = My_GLLE_DirectSampling(X.T, n_neighbors=10, n_components=n_components, path_save="./saved_files/"+method+"/"+dataset+"/", max_itr=max_iterations, verbosity=verbosity)
+        my_GLLE_DirectSampling = My_GLLE_DirectSampling(X.T, n_neighbors=10, n_components=n_components, path_save="./saved_files/"+method+"/"+dataset+"/", verbosity=verbosity)
         Y = my_GLLE_DirectSampling.fit_transform(calculate_again=embed_again)
         Y = Y.T
     

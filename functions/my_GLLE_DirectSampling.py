@@ -6,7 +6,7 @@ import functions.utils as utils
 
 class My_GLLE_DirectSampling:
 
-    def __init__(self, X, n_neighbors=10, n_components=None, path_save="./", max_itr=100, verbosity=0):
+    def __init__(self, X, n_neighbors=10, n_components=None, path_save="./", verbosity=0):
         # X: rows are features and columns are samples
         self.n_components = n_components
         self.X = X

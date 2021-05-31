@@ -1,0 +1,12 @@
+{
+"method": "GLLE", 
+"dataset": "Sphere",
+"make_dataset_again": "False",
+"embed_again": "True",
+"generate_embedding_again": "False",
+"analyze_covariance_scales": "False",
+"n_generation_of_embedding": 30,
+"max_iterations": 10,
+"n_components": 5,
+"verbosity": 0
+}
