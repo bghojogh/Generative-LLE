@@ -4,7 +4,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
 from matplotlib import offsetbox
-from skimage.transform import resize
+# from skimage.transform import resize
 
 
 def save_variable(variable, name_of_variable, path_to_save='./'):
@@ -150,7 +150,7 @@ def plot_components(X_projected, labels, which_dimensions_to_plot, images=None, 
     fig, ax = plt.subplots(figsize=(10, 10))
     # ax.plot(X_projected[:, 0], X_projected[:, 1], '.k', markersize=markersize)
     ax.scatter(X_projected[:, 0], X_projected[:, 1], c=labels, cmap=colormap, edgecolors='k')
-    images = resize(images, (images.shape[0], images.shape[1]*image_scale, images.shape[2]*image_scale), order=5, preserve_range=True, mode="constant")
+    #### images = resize(images, (images.shape[0], images.shape[1]*image_scale, images.shape[2]*image_scale), order=5, preserve_range=True, mode="constant")
     if images is not None:
         min_dist_2 = (thumb_frac * max(X_projected.max(0) - X_projected.min(0))) ** 2
         shown_images = np.array([2 * X_projected.max(0)])
