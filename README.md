@@ -73,7 +73,8 @@ python main.py
 
 The theory of this module is explained in detail in the following paper:
 
-- Benyamin Ghojogh, Ali Ghodsi, Fakhri Karray, Mark Crowley. "Generative Locally Linear Embedding", arXiv preprint 	arXiv:2104.01525, 2021.
+- GLLE paper (theory): Benyamin Ghojogh, Ali Ghodsi, Fakhri Karray, Mark Crowley. "Generative Locally Linear Embedding", arXiv preprint arXiv:2104.01525, 2021.
+- LLE paper (tutorial): Benyamin Ghojogh, Ali Ghodsi, Fakhri Karray, and Mark Crowley. "Locally Linear Embedding and its Variants: Tutorial and Survey." arXiv preprint arXiv:2011.10925, 2020.
 - Link of GLLE paper at arXiv: https://arxiv.org/abs/2104.01525
 - Link of LLE tutorial at arXiv: https://arxiv.org/abs/2011.10925
 
