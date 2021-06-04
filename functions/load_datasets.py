@@ -5,8 +5,8 @@ import os
 import pickle
 import functions.utils as utils
 from sklearn.preprocessing import StandardScaler
-from PIL import Image
-from skimage.transform import resize
+# from PIL import Image
+# from skimage.transform import resize
 
 
 def make_sphere_dataset(n_samples, severed_poles=False):

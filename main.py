@@ -1,7 +1,7 @@
 from functions.my_LLE import My_LLE
 from functions.my_GLLE import My_GLLE
 from functions.my_GLLE_DirectSampling import My_GLLE_DirectSampling
-import functions.load_datasets
+import functions.load_datasets as load_datasets
 import functions.utils as utils
 from sklearn import manifold, datasets
 import numpy as np
