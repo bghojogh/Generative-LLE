@@ -99,7 +99,7 @@ The bib citation for theoretical paper is:
 @InProceedings{ghojogh2021generative,
   title={Generative Locally Linear Embedding},
   author={Ghojogh, Benyamin and Ghodsi, Ali and Karray, Fakhri and Crowley, Mark},
-  booktitle={arXiv preprint arXiv:2104.01525, Under review of IEEE SMC conference},
+  booktitle={arXiv preprint arXiv:2104.01525},
   year={2021}
 }
 </pre>
