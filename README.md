@@ -2,7 +2,10 @@
 
 ## About
 
-This is the open-source code for the GLLE module. This open-source module can be used for manifold unfolding and visualization. It generates various unfoldings in an stochastic way where the generated unfoldings are related to the deterministic Locally Linear Embedding (LLE). For more information about the original deterministic LLE, one can refer to our tutorial available at https://arxiv.org/abs/2011.10925. For information about the theory of stochastic GLLE, one can see our theoretical paper at https://arxiv.org/abs/2104.01525.
+This is the open-source code for the GLLE module. This open-source module can be used for manifold unfolding and visualization. It generates various unfoldings in an stochastic way where the generated unfoldings are related to the deterministic Locally Linear Embedding (LLE). 
+- For more information about the original deterministic LLE, one can refer to our tutorial available at https://arxiv.org/abs/2011.10925. 
+- For information about the theory of stochastic GLLE, one can see our theoretical paper at https://arxiv.org/abs/2104.01525.
+- The paper for software module of GLLE is available at https://doi.org/10.1016/j.simpa.2021.100105.
 
 ## How to use the module
 
